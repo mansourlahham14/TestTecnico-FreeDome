@@ -15,7 +15,7 @@ export class WeatherIcons {
     if (code === 800) return this.clear();
     if (code === 801 || code === 802) return this.partlyCloudy();
     if (code === 803 || code === 804) return this.cloudy();
-    
+
     return this.clear();
   }
 

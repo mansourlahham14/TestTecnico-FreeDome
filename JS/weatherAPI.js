@@ -1,6 +1,6 @@
 /*Weather API Module e Gestione di tutte le interazioni con l'API OpenWeather, inclusi caching e parsing dei dati*/
 
-import CONFIG from './config.js';
+import CONFIG from "./config.js";
 
 class WeatherAPI {
   constructor() {
@@ -9,7 +9,7 @@ class WeatherAPI {
     this.units = CONFIG.UNITS;
     this.lang = CONFIG.LANG;
     this.demoMode = CONFIG.DEMO_MODE || false;
-    
+
     this.cache = new Map();
     this.cacheExpiry = 10 * 60 * 1000; // 10 minuti
   }
@@ -21,19 +21,19 @@ class WeatherAPI {
    */
   async getCurrentWeather(location) {
     if (this.demoMode) {
-      return this._getDemoData('current');
+      return this._getDemoData("current");
     }
-    
+
     const cacheKey = `current_${location}`;
-    
+
     return this._getCachedOrFetch(cacheKey, async () => {
-      const url = this._buildUrl('weather', location);
+      const url = this._buildUrl("weather", location);
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return this._parseCurrentWeather(data);
     });
@@ -46,19 +46,19 @@ class WeatherAPI {
    */
   async getHourlyForecast(location) {
     if (this.demoMode) {
-      return this._getDemoData('hourly');
+      return this._getDemoData("hourly");
     }
-    
+
     const cacheKey = `hourly_${location}`;
-    
+
     return this._getCachedOrFetch(cacheKey, async () => {
-      const url = this._buildUrl('forecast', location);
+      const url = this._buildUrl("forecast", location);
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return this._parseHourlyForecast(data);
     });
@@ -71,19 +71,19 @@ class WeatherAPI {
    */
   async getDailyForecast(location) {
     if (this.demoMode) {
-      return this._getDemoData('daily');
+      return this._getDemoData("daily");
     }
-    
+
     const cacheKey = `daily_${location}`;
-    
+
     return this._getCachedOrFetch(cacheKey, async () => {
-      const url = this._buildUrl('forecast', location);
+      const url = this._buildUrl("forecast", location);
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       return this._parseDailyForecast(data);
     });
@@ -94,27 +94,27 @@ class WeatherAPI {
       q: location,
       appid: this.apiKey,
       units: this.units,
-      lang: this.lang
+      lang: this.lang,
     });
-    
+
     return `${this.baseUrl}/${endpoint}?${params}`;
   }
 
   /*Recupera dati dalla cache o effettua una nuova chiamata API*/
   async _getCachedOrFetch(cacheKey, fetchFunction) {
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
       return cached.data;
     }
-    
+
     const data = await fetchFunction();
-    
+
     this.cache.set(cacheKey, {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     return data;
   }
 
@@ -139,18 +139,18 @@ class WeatherAPI {
       weatherCode: data.weather[0].id,
       humidity: data.main.humidity,
       windSpeed: data.wind.speed,
-      timestamp: data.dt
+      timestamp: data.dt,
     };
   }
 
   /*Estrae le prime 5 previsioni orarie dalla risposta API*/
   _parseHourlyForecast(data) {
-    return data.list.slice(0, 5).map(item => ({
+    return data.list.slice(0, 5).map((item) => ({
       time: this._formatTime(item.dt),
       temp: Math.round(item.main.temp),
       icon: item.weather[0].icon,
       weatherCode: item.weather[0].id,
-      timestamp: item.dt
+      timestamp: item.dt,
     }));
   }
 
@@ -158,11 +158,11 @@ class WeatherAPI {
   _parseDailyForecast(data) {
     const dailyData = [];
     const processedDays = new Set();
-    
+
     for (const item of data.list) {
       const date = new Date(item.dt * 1000);
       const day = date.toDateString();
-      
+
       if (!processedDays.has(day) && dailyData.length < 5) {
         const hour = date.getHours();
         if (hour >= 11 && hour <= 14) {
@@ -171,32 +171,32 @@ class WeatherAPI {
             temp: Math.round(item.main.temp),
             icon: item.weather[0].icon,
             weatherCode: item.weather[0].id,
-            timestamp: item.dt
+            timestamp: item.dt,
           });
           processedDays.add(day);
         }
       }
-      
+
       if (dailyData.length >= 5) break;
     }
-    
+
     return dailyData;
   }
 
   /*Formatta timestamp Unix in formato orario (HH:MM)*/
   _formatTime(timestamp) {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleTimeString('it-IT', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
+    return date.toLocaleTimeString("it-IT", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
   }
 
   /*Formatta timestamp Unix in nome del giorno abbreviato*/
   _formatDay(timestamp) {
     const date = new Date(timestamp * 1000);
-    return date.toLocaleDateString('it-IT', { weekday: 'short' });
+    return date.toLocaleDateString("it-IT", { weekday: "short" });
   }
 }
 

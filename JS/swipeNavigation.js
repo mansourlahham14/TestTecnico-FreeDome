@@ -8,7 +8,7 @@ export class SwipeNavigation {
     this.threshold = options.threshold || 50; // Distanza minima per considerare uno swipe valido (px)
     this.restraint = options.restraint || 100; // Movimento verticale massimo consentito (px)
     this.allowedTime = options.allowedTime || 500; // Tempo massimo per lo swipe (ms)
-    
+
     // Stato del gesto
     this.startX = 0;
     this.startY = 0;
@@ -16,27 +16,48 @@ export class SwipeNavigation {
     this.distY = 0;
     this.startTime = 0;
     this.elapsedTime = 0;
-    
+
     this.onSwipe = options.onSwipe || (() => {});
-    
+
     this.init();
   }
 
   /*Inizializza gli event listener per touch e mouse*/
   init() {
     // Eventi touch per dispositivi mobile
-    this.container.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
-    this.container.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: true });
-    this.container.addEventListener('touchend', this.handleTouchEnd.bind(this), { passive: true });
-    
+    this.container.addEventListener(
+      "touchstart",
+      this.handleTouchStart.bind(this),
+      { passive: true },
+    );
+    this.container.addEventListener(
+      "touchmove",
+      this.handleTouchMove.bind(this),
+      { passive: true },
+    );
+    this.container.addEventListener(
+      "touchend",
+      this.handleTouchEnd.bind(this),
+      { passive: true },
+    );
+
     // Eventi mouse per desktop
-    this.container.addEventListener('mousedown', this.handleMouseDown.bind(this));
-    this.container.addEventListener('mousemove', this.handleMouseMove.bind(this));
-    this.container.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    this.container.addEventListener('mouseleave', this.handleMouseUp.bind(this));
-    
+    this.container.addEventListener(
+      "mousedown",
+      this.handleMouseDown.bind(this),
+    );
+    this.container.addEventListener(
+      "mousemove",
+      this.handleMouseMove.bind(this),
+    );
+    this.container.addEventListener("mouseup", this.handleMouseUp.bind(this));
+    this.container.addEventListener(
+      "mouseleave",
+      this.handleMouseUp.bind(this),
+    );
+
     // Previene il comportamento di drag predefinito del browser
-    this.container.addEventListener('dragstart', (e) => e.preventDefault());
+    this.container.addEventListener("dragstart", (e) => e.preventDefault());
   }
 
   handleTouchStart(e) {
@@ -46,15 +67,14 @@ export class SwipeNavigation {
     this.startTime = Date.now();
   }
 
-  handleTouchMove(e) {
-  }
+  handleTouchMove(e) {}
 
   handleTouchEnd(e) {
     const touch = e.changedTouches[0];
     this.distX = touch.clientX - this.startX;
     this.distY = touch.clientY - this.startY;
     this.elapsedTime = Date.now() - this.startTime;
-    
+
     this.evaluateSwipe();
   }
 
@@ -63,7 +83,7 @@ export class SwipeNavigation {
     this.startX = e.clientX;
     this.startY = e.clientY;
     this.startTime = Date.now();
-    this.container.style.cursor = 'grabbing';
+    this.container.style.cursor = "grabbing";
   }
 
   handleMouseMove(e) {
@@ -72,25 +92,28 @@ export class SwipeNavigation {
 
   handleMouseUp(e) {
     if (!this.isMouseDown) return;
-    
+
     this.isMouseDown = false;
     this.distX = e.clientX - this.startX;
     this.distY = e.clientY - this.startY;
     this.elapsedTime = Date.now() - this.startTime;
-    this.container.style.cursor = 'grab';
-    
+    this.container.style.cursor = "grab";
+
     this.evaluateSwipe();
   }
 
   /*Valuta se il gesto soddisfa i criteri per essere considerato uno swipe valido*/
   evaluateSwipe() {
     if (this.elapsedTime <= this.allowedTime) {
-      if (Math.abs(this.distX) >= this.threshold && Math.abs(this.distY) <= this.restraint) {
-        const direction = this.distX < 0 ? 'left' : 'right';
+      if (
+        Math.abs(this.distX) >= this.threshold &&
+        Math.abs(this.distY) <= this.restraint
+      ) {
+        const direction = this.distX < 0 ? "left" : "right";
         this.handleSwipe(direction);
       }
     }
-    
+
     this.distX = 0;
     this.distY = 0;
   }
@@ -98,13 +121,13 @@ export class SwipeNavigation {
   /*Gestisce la direzione dello swipe e naviga alla vista appropriata*/
   handleSwipe(direction) {
     let newIndex = this.currentIndex;
-    
-    if (direction === 'left' && this.currentIndex < this.totalViews - 1) {
+
+    if (direction === "left" && this.currentIndex < this.totalViews - 1) {
       newIndex = this.currentIndex + 1;
-    } else if (direction === 'right' && this.currentIndex > 0) {
+    } else if (direction === "right" && this.currentIndex > 0) {
       newIndex = this.currentIndex - 1;
     }
-    
+
     if (newIndex !== this.currentIndex) {
       this.currentIndex = newIndex;
       this.onSwipe(newIndex);
