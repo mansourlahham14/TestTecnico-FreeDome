@@ -170,6 +170,25 @@ Nel file `css/styles.css`:
 }
 ```
 
+### Workflow di Sviluppo e Git
+
+**Nota sulla cronologia dei commit**: Il progetto è stato sviluppato interamente in locale su VS Code seguendo un approccio iterativo e professionale. I commit sono stati creati in sequenza rapida al momento del caricamento su GitHub per riflettere la progressione logica dello sviluppo:
+
+1. Setup iniziale e configurazione
+2. Integrazione API OpenWeather
+3. Struttura HTML base
+4. Design system CSS
+5. Implementazione viste meteo
+6. Modulo di fetch dati
+7. Navigazione swipe
+8. Animazioni e transizioni
+9. Polish visivo e icone
+10. Ottimizzazione e caching
+11. Documentazione
+12. Responsive design
+
+Questa strategia di commit atomici permette di comprendere facilmente l'evoluzione del progetto e dimostra una chiara separazione delle responsabilità, anche se il lavoro è stato completato localmente prima del push su repository.
+
 ## 📝 Note di Sviluppo
 
 ### Perché Vanilla JavaScript?
@@ -203,3 +222,4 @@ MIT License - Libero uso per progetti personali e commerciali
 Mansour Eduardo Lahham
 
 ---
+
